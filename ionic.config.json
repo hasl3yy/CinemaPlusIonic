@@ -1,0 +1,7 @@
+{
+  "name": "CinemaPlusIonic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
