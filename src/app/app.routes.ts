@@ -10,10 +10,13 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./login/login.component').then((m) => m.LoginComponent)
   },
+  // Si 'funciones' necesita recibir el ID de una película o función específica, hazlo así:
+  // {
+  //   path: 'funciones/:idPelicula',
+  //   loadComponent: () => import('./funciones/funciones.page').then((m) => m.FuncionesPage)
+  // },
   {
-    path: '',
-    // Aquí debes cargar el componente de las pestañas (TabsPage) 
-    // en lugar de cargar directamente 'tabs.routes'
+    path: 'tabs', // Es recomendable darle un path raíz a las pestañas para evitar conflictos con el path vacío ''
     loadComponent: () => import('./tabs/tabs.page').then((m) => m.TabsPage),
     children: [
       {
@@ -35,6 +38,7 @@ export const routes: Routes = [
       }
     ]
   },
+  // Ruta comodín para redirigir URLs inválidas al login
   {
     path: '**',
     redirectTo: 'login',

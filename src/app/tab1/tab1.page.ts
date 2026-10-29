@@ -47,6 +47,10 @@ export class PeliculasComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
+    irAFunciones(): void {
+    this.router.navigate(['/funciones']);
+  }
+
 
 
 }
