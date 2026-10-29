@@ -10,6 +10,11 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./login/login.component').then((m) => m.LoginComponent)
   },
+  {
+    path: 'funciones',
+    loadComponent: () => import('./funciones/funciones.component').then((m) => m.FuncionesComponent)
+  },
+
   // Si 'funciones' necesita recibir el ID de una película o función específica, hazlo así:
   // {
   //   path: 'funciones/:idPelicula',

@@ -27,7 +27,7 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: () => {
-        this.router.navigate(['/tab1']);
+        this.router.navigate(['tabs/tab1']);
       },
       error: (err) => {
         console.error('Error en el login:', err);
