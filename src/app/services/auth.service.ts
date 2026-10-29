@@ -23,7 +23,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(credentials: { correo: string; contrasena: string; estado: string }): Observable<Usuario> {
+  login(credentials: { correo: string; contrasena: string; estado?: string }): Observable<Usuario> {
 
     if (credentials.estado != 'ACTIVO') {
       return this.http.post<Usuario>(`${this.apiUrl}/login`, credentials).pipe(

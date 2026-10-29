@@ -1,20 +1,43 @@
-<div class="peliculas-container">
-  <div class="peliculas-header">
-    <h2>Gestión de peliculas</h2>
-  </div>
+<ion-content class="ion-padding">
+  <div class="peliculas-container">
+    <div class="peliculas-header">
+      <h2>Gestión de películas</h2>
+    </div>
 
-  <div>
-    <h3>Anuncios publicados</h3>
-    <div class="lista-anuncios">
-      @for (a of peliculas(); track a.id_pelicula) {
-        <div class="tarjeta-anuncio">
-          <img *ngIf="a.imagenPromocional" [src]="a.imagenPromocional" [alt]="a.titulo" />
-          <div class="tarjeta-info">
-            <h4>{{ a.titulo }}</h4>
-            <p>{{ a.sinopsis }}</p>
-          </div>
-        </div>
-      }
+    <div>
+      <h3>Películas disponibles</h3>
+      <div class="lista-anuncios">
+        @for (a of peliculas(); track a.id_pelicula) {
+          <ion-card class="tarjeta-anuncio">
+            <!-- Imagen de la película -->
+            <img *ngIf="a.imagenPromocional" [src]="a.imagenPromocional" [alt]="a.titulo" />
+            
+            <ion-card-header>
+              <ion-card-title>{{ a.titulo }}</ion-card-title>
+            </ion-card-header>
+
+            <div class="tarjeta-info" style="padding: 0 16px 16px 16px;">
+              <p><strong>Sinopsis:</strong> {{ a.sinopsis }}</p>
+              
+              <!-- Datos extra requeridos: Género, Clasificación y Duración -->
+              <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <ion-badge color="primary" *ngIf="a.genero">
+                  {{ a.genero.nombre }}
+                </ion-badge>
+                
+                <ion-badge color="secondary" *ngIf="a.clasificacion">
+                  {{ a.clasificacion.nombre }}
+                </ion-badge>
+                
+                <ion-badge color="tertiary" *ngIf="a.duracion_minutos">
+                  {{ a.duracion_minutos }} min
+                </ion-badge>
+      
+              </div>
+            </div>
+          </ion-card>
+        }
+      </div>
     </div>
   </div>
-</div>
+</ion-content>
