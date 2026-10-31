@@ -1,1 +1,46 @@
-<h1> holaaa </h1>
+<ion-header>
+  <ion-toolbar color="primary">
+    <!-- Botón para regresar automáticamente al Tab 1 (Cartelera) -->
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Funciones Disponibles</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Spinner mientras carga -->
+  <div *ngIf="cargando" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <!-- Si ya cargó y hay funciones -->
+  <ion-list *ngIf="!cargando && listaFunciones.length > 0">
+    @for (funcion of listaFunciones; track funcion.id_funcion) {
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle>Sala: {{ funcion.sala?.nombre }}</ion-card-subtitle>
+          <ion-card-title>
+            {{ funcion.fecha | date: 'fullDate' }}
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <p><strong>Hora:</strong> {{ funcion.hora.slice(0, 5) }} hrs</p>
+          <p><strong>Precio:</strong> Q{{ funcion.precio_entrada }}</p>
+
+          <ion-button expand="block" color="success" class="ion-margin-top" (click)="seleccionarFuncion(funcion.id_funcion)">
+            Reservar / Comprar
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    }
+  </ion-list>
+
+  <!-- Si no hay funciones disponibles -->
+  <div *ngIf="!cargando && listaFunciones.length === 0" class="ion-text-center ion-padding">
+    <p>No hay funciones activas disponibles para esta película en este momento.</p>
+  </div>
+
+</ion-content>

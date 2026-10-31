@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/funciones"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Selecciona tus Asientos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Indicador de la pantalla de cine -->
+  <div class="screen-container ion-text-center ion-margin-bottom">
+    <div class="screen-bar"> PANTALLA </div>
+  </div>
+
+  <!-- Cuadrícula de Asientos -->
+  <div class="seating-grid ion-padding">
+    <div *ngFor="let fila of filas" class="row ion-justify-content-center ion-align-items-center">
+      <span class="row-label">{{ fila }}</span>
+      <button 
+        *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" 
+        class="seat"
+        [class.selected]="isSeleccionado(fila, num)"
+        (click)="toggleAsiento(fila, num)">
+        {{ num }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Resumen y Botón de Confirmación -->
+  <div class="ion-margin-top ion-padding" *ngIf="asientosSeleccionados.length > 0">
+    <p><strong>Asientos seleccionados:</strong> {{ asientosSeleccionados.join(', ') }}</p>
+    <p><strong>Total a pagar:</strong> Q{{ asientosSeleccionados.length * 50 }}</p> <!-- Ajusta el precio según la función -->
+
+    <ion-button expand="block" color="success" (click)="continuarCompra()">
+      Confirmar Reserva
+    </ion-button>
+  </div>
+
+</ion-content>
