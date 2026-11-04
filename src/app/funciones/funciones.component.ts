@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FuncionService, Funcion } from '../services/funcion.service';
 import { Router } from '@angular/router';
 import { IonCardContent, IonButton, IonSpinner, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonList, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/angular';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-funciones',
@@ -22,19 +23,16 @@ export class FuncionesComponent implements OnInit, OnChanges {
     private router: Router
   ) {}
 
-  // 1. ngOnInit se ejecuta siempre al inicializar el componente
   ngOnInit() {
     this.verificarYCargar();
   }
 
-  // 2. OnChanges detecta si el @Input() cambia si el componente se reutiliza en pantalla
   ngOnChanges(changes: SimpleChanges) {
     if (changes['idPelicula'] && !changes['idPelicula'].firstChange) {
       this.verificarYCargar();
     }
   }
 
-  // 3. Soporte para cuando Ionic vuelve a enfocar la vista
   ionViewWillEnter() {
     this.verificarYCargar();
   }
@@ -44,7 +42,6 @@ export class FuncionesComponent implements OnInit, OnChanges {
     if (this.idPelicula) {
       this.cargarFunciones();
     } else {
-      // Si por alguna razón el Input tarda en llegar, apagamos el estado de carga o prevenimos bloqueos
       this.cargando = false;
     }
   }
@@ -60,7 +57,7 @@ export class FuncionesComponent implements OnInit, OnChanges {
       error: (err) => {
         console.error('Error al cargar las funciones:', err);
         this.listaFunciones = [];
-        this.cargando = false; // ¡Clave para que no se quede el spinner dando vueltas si falla la API!
+        this.cargando = false; 
       }
     });
   }
@@ -69,4 +66,7 @@ export class FuncionesComponent implements OnInit, OnChanges {
     console.log('Función seleccionada:', idFuncion);
     this.router.navigate(['/asientos', idFuncion]);
   }
+
+
+
 }

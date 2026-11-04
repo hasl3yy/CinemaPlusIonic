@@ -16,13 +16,13 @@
 
   <!-- Cuadrícula de Asientos -->
   <div class="seating-grid ion-padding">
-    <div *ngFor="let fila of filas" class="row ion-justify-content-center ion-align-items-center">
+    <div class="row ion-justify-content-center ion-align-items-center" *ngFor="let fila of filas">
       <span class="row-label">{{ fila }}</span>
       <button 
         *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" 
         class="seat"
-        [class.selected]="isSeleccionado(fila, num)"
-        (click)="toggleAsiento(fila, num)">
+        [class.selected]="isSeleccionado(num)"
+        (click)="toggleAsiento(num)">
         {{ num }}
       </button>
     </div>
@@ -31,7 +31,7 @@
   <!-- Resumen y Botón de Confirmación -->
   <div class="ion-margin-top ion-padding" *ngIf="asientosSeleccionados.length > 0">
     <p><strong>Asientos seleccionados:</strong> {{ asientosSeleccionados.join(', ') }}</p>
-    <p><strong>Total a pagar:</strong> Q{{ asientosSeleccionados.length * 50 }}</p> <!-- Ajusta el precio según la función -->
+    <p><strong>Total a pagar:</strong> Q{{ asientosSeleccionados.length * 50 }}</p>
 
     <ion-button expand="block" color="success" (click)="continuarCompra()">
       Confirmar Reserva
