@@ -1,17 +1,23 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
-  </ion-toolbar>
+<ion-header>
+  <ion-toolbar><ion-title>Mis reservas</ion-title></ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+<ion-content class="ion-padding">
+  @for (r of reservas(); track r.id_reserva) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>{{ r.fecha_reserva | date:'dd/MM/yyyy HH:mm' }}</ion-card-subtitle>
+        <ion-card-title>{{ r.funcion?.pelicula?.titulo }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Sala:</strong> {{ r.funcion?.sala?.nombre }}</p>
+        <p><strong>Función:</strong> {{ r.funcion?.fecha }} {{ r.funcion?.hora?.slice(0,5) }}</p>
+        <p><strong>Entradas:</strong> {{ r.cantidad_entradas }}</p>
+        <p><strong>Total:</strong> Q{{ r.total_a_pagar }}</p>
+        <ion-badge>{{ r.estado }}</ion-badge>
+      </ion-card-content>
+    </ion-card>
+  } @empty {
+    <p class="ion-text-center">Aún no tienes reservas.</p>
+  }
 </ion-content>
