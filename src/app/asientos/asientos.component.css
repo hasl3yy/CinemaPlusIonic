@@ -50,3 +50,11 @@
   color: white;
   border-color: #16a34a;
 }
+
+.seat.occupied {
+  background-color: #ef4444;
+  color: white;
+  border-color: #b91c1c;
+  cursor: not-allowed;
+  opacity: .7;
+}

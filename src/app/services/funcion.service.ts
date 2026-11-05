@@ -26,4 +26,8 @@ listarPorPelicula(idPelicula: number): Observable<Funcion[]> {
     return this.http.get<Funcion[]>(`${this.apiUrl}/buscar/pelicula/${idPelicula}`);
 }
 
+obtener(id: number): Observable<Funcion> {
+  return this.http.get<Funcion>(`${this.apiUrl}/buscar/${id}`);
+}
+
 }

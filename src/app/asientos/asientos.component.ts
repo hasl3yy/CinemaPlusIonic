@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonButton, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent } from '@ionic/angular';
 import { ReservaService } from '../services/reserva.service';
+import { AsientoService, Asiento } from '../services/asiento.service'; 
+import { FuncionService } from '../services/funcion.service';
+
 
 @Component({
   selector: 'app-asientos',
@@ -11,87 +14,88 @@ import { ReservaService } from '../services/reserva.service';
   standalone: true,
   imports: [CommonModule, IonButton, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent]
 })
+
 export class AsientosComponent implements OnInit {
   @Input() idFuncion!: number;
 
-  filas: string[] = ['A', 'B', 'C', 'D', 'E'];
-  asientosPorFila: number = 10;
-  asientosSeleccionados: number[] = [];
+  
+
+  filas: { nombre: string; asientos: Asiento[] }[] = [];
+  asientosSeleccionados: Asiento[] = [];
   asientosOcupados: number[] = [];
+  precio = 0;
 
   constructor(
-    private router: Router, 
-    private route: ActivatedRoute, 
-    private reservaService: ReservaService
-  ) { }
+    private router: Router,
+    private route: ActivatedRoute,
+    private reservaService: ReservaService,
+    private asientoService: AsientoService,
+    private funcionService: FuncionService
+  ) {}
 
-ngOnInit() {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.idFuncion = Number(idParam);
-    }
-    console.log('ID de función listo para usar:', this.idFuncion);
-    
+  ngOnInit() {
+    this.idFuncion = Number(this.route.snapshot.paramMap.get('idFuncion'));
+
+    this.funcionService.obtener(this.idFuncion).subscribe(f => {
+      this.precio = f.precio_entrada;
+      this.asientoService.getAsientosPorSala(f.sala!.id_sala)
+        .subscribe(lista => this.armarMapa(lista));
+    });
     this.cargarAsientosOcupados();
   }
 
-  cargarAsientosOcupados() {
-    if (!this.idFuncion) return;
+  private armarMapa(lista: Asiento[]) {
+    const mapa = new Map<string, Asiento[]>();
 
+    for (const a of lista) {
+      const n = a.fila?.nombre ?? '?';
+      if (!mapa.has(n)) mapa.set(n, []);
+      mapa.get(n)!.push(a);
+    }
+    this.filas = [...mapa.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([nombre, asientos]) => ({
+        nombre,
+        asientos: asientos.sort((x, y) => x.numero - y.numero)
+      }));
+  }
+
+  cargarAsientosOcupados() {
     this.reservaService.getAsientosOcupados(this.idFuncion).subscribe({
-      next: (ocupados) => {
-        this.asientosOcupados = ocupados;
-        console.log('Asientos ya ocupados en esta función:', this.asientosOcupados);
-      },
-      error: (err) => {
-        console.error('Error al cargar asientos ocupados:', err);
-      }
+      next: o => (this.asientosOcupados = o),
+      error: e => console.error(e)
     });
   }
 
-// Ahora recibe directamente el ID numérico del asiento (ej: 1, 2, 3...)
-  toggleAsiento(idAsiento: number) {
-    const index = this.asientosSeleccionados.indexOf(idAsiento);
+  isOcupado(a: Asiento) { return this.asientosOcupados.includes(a.id_asiento); }
+  isSeleccionado(a: Asiento) { return this.asientosSeleccionados.some(s => s.id_asiento === a.id_asiento); }
 
-    if (index > -1) {
-      this.asientosSeleccionados.splice(index, 1);
-    } else {
-      this.asientosSeleccionados.push(idAsiento);
-    }
+  toggleAsiento(a: Asiento) {
+    if (this.isOcupado(a)) return;
+    const i = this.asientosSeleccionados.findIndex(s => s.id_asiento === a.id_asiento);
+    i > -1 ? this.asientosSeleccionados.splice(i, 1) : this.asientosSeleccionados.push(a);
   }
 
-  // Y para verificar si está seleccionado:
-  isSeleccionado(idAsiento: number): boolean {
-    return this.asientosSeleccionados.includes(idAsiento);
-  }
+  get total() { return this.asientosSeleccionados.length * this.precio; }
 
   continuarCompra() {
-    if (this.asientosSeleccionados.length === 0) {
-      console.warn('Debe seleccionar al menos un asiento.');
-      return;
-    }
 
-    // Supongamos que obtienes el id del cliente logueado (por ejemplo, desde localStorage)
-    const idClienteLogueado = Number(localStorage.getItem('id_cliente')) || 1;
+    if (!this.asientosSeleccionados.length) return;
 
-    const payload = {
-      id_cliente: idClienteLogueado,
+    const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+    const idCliente = usuario?.id_cliente ?? 1; // ver nota del login abajo
+
+    this.reservaService.guardarReserva({
+      id_cliente: idCliente,
       id_funcion: this.idFuncion,
-      // Nota: Asegúrate de mandar los IDs numéricos reales de los asientos, 
-      // no la cadena combinada como "A1" (por ejemplo: [1, 2, 3])
-      id_asientos: this.asientosSeleccionados
-    };
-
-    this.reservaService.guardarReserva(payload).subscribe({
-      next: (response) => {
-        console.log('Reserva creada con éxito:', response);
-        // Aquí puedes navegar a una pantalla de éxito o mostrar un mensaje
+      id_asientos: this.asientosSeleccionados.map(a => a.id_asiento)   // <-- nombre correcto
+    }).subscribe({
+      next: () => {
+        alert('Reserva confirmada');
+        this.asientosSeleccionados = [];
+        this.cargarAsientosOcupados();
       },
-      error: (err) => {
-        console.error('Error al reservar:', err);
-        // Si el backend responde 409, aquí atraparás el mensaje de "Asientos ocupados"
-        alert(err.error || 'Ocurrió un error al procesar la reserva.');
-      }
+      error: err => alert(err.error || 'Ocurrió un error al procesar la reserva.')
     });
   }
 }

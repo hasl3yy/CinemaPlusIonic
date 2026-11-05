@@ -10,7 +10,7 @@ export class ReservaService {
   // URL base de tu backend (asegúrate de ajustarla si usas IP de red local o environment)
   private apiUrl = 'http://localhost:8080';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // 1. Obtener los IDs de los asientos ocupados para una función específica
   getAsientosOcupados(id_funcion: number): Observable<number[]> {

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/funciones"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
     </ion-buttons>
     <ion-title>Selecciona tus Asientos</ion-title>
   </ion-toolbar>
@@ -16,26 +16,39 @@
 
   <!-- Cuadrícula de Asientos -->
   <div class="seating-grid ion-padding">
+    <!-- Recorremos las filas generadas dinámicamente desde el servicio -->
     <div class="row ion-justify-content-center ion-align-items-center" *ngFor="let fila of filas">
-      <span class="row-label">{{ fila }}</span>
-      <button 
-        *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" 
-        class="seat"
-        [class.selected]="isSeleccionado(num)"
-        (click)="toggleAsiento(num)">
-        {{ num }}
-      </button>
+      <span class="row-label">{{ fila.nombre }}</span>
+
+      <div class="seating-grid ion-padding">
+        <div class="row" *ngFor="let fila of filas">
+          <span class="row-label">{{ fila.nombre }}</span>
+          <button *ngFor="let a of fila.asientos" class="seat" [class.selected]="isSeleccionado(a)"
+            [class.occupied]="isOcupado(a)" [disabled]="isOcupado(a)" (click)="toggleAsiento(a)">
+            {{ a.numero }}
+          </button>
+        </div>
+      </div>
+
+      <div class="ion-margin-top ion-padding" *ngIf="asientosSeleccionados.length > 0">
+        <p><strong>Total a pagar:</strong> Q{{ total }}</p>
+        <ion-button expand="block" color="success" (click)="continuarCompra()">Confirmar Reserva</ion-button>
+      </div>
+
+      <!-- Resumen y Botón de Confirmación -->
+      <div class="ion-margin-top ion-padding" *ngIf="asientosSeleccionados.length > 0">
+        <p><strong>Asientos seleccionados:</strong>
+          <span *ngFor="let a of asientosSeleccionados; let last = last">
+            {{ a.fila?.nombre }}{{ a.numero }}{{!last ? ', ' : ''}}
+          </span>
+        </p>
+        <p><strong>Total a pagar:</strong> Q{{ total }}</p>
+
+        <ion-button expand="block" color="success" (click)="continuarCompra()">
+          Confirmar Reserva
+        </ion-button>
+      </div>
+
     </div>
-  </div>
-
-  <!-- Resumen y Botón de Confirmación -->
-  <div class="ion-margin-top ion-padding" *ngIf="asientosSeleccionados.length > 0">
-    <p><strong>Asientos seleccionados:</strong> {{ asientosSeleccionados.join(', ') }}</p>
-    <p><strong>Total a pagar:</strong> Q{{ asientosSeleccionados.length * 50 }}</p>
-
-    <ion-button expand="block" color="success" (click)="continuarCompra()">
-      Confirmar Reserva
-    </ion-button>
-  </div>
-
-</ion-content>
+  </div>  
+  
