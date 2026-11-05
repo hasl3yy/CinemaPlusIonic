@@ -18,7 +18,7 @@ export class ReservaService {
   }
 
   // 2. Guardar la reserva junto con los asientos seleccionados
-  guardarReserva(payload: { id_cliente: number, id_funcion: number, id_asientos: number[] }): Observable<any> {
+  guardarReserva(payload: { id_cliente: number, id_funcion: number, id_asiento: number[] }): Observable<any> {
     return this.http.post(`${this.apiUrl}/reserva/reservar`, payload);
   }
 

@@ -4,24 +4,28 @@ import { Observable } from 'rxjs';
 import { Pelicula } from './peliculas.service';
 import { Sala } from './salas.service';
 
-export interface Asiento {
-    id_asiento: number;
-    numero: number;
-    pelicula: Pelicula | null;
-    sala: Sala | null;
+export interface Cliente {
+    id_cliente: number;
+    nit: string;
+    nombres: string;
+    apellidos: string;
+    correo: string;
+    telefono: string;
+    contrasena: string;
+    fotografia: string | null;
 
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class AsientoService {
-    private apiUrl = 'http://localhost:8080/asiento';
+export class ClienteService {
+    private apiUrl = 'http://localhost:8080/cliente';
 
     constructor(private http: HttpClient) { }
 
-getAsientosPorSala(idSala: number): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/asiento/buscar/sala/${idSala}`);
-}
+    getCliente(id: number): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/${id}`);
+    }
 
 }

@@ -2,35 +2,33 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
-export interface Usuario {
-  id_usuario: number;
+export interface Cliente {
+  id_cliente: number;
+  nit: string;
   nombres: string;
   apellidos: string;
   correo: string;
   telefono: string;
-  nombre_usuario: string;
   contrasena?: string;
-  rol: { id_rol: number; nombre: string } | null;
   fotografia: string | null;
-  estado: String;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/usuario';
+  private apiUrl = 'http://localhost:8080/cliente';
 
   constructor(private http: HttpClient) { }
 
-  login(credentials: { correo: string; contrasena: string; estado?: string }): Observable<Usuario> {
+  login(credentials: { correo: string; contrasena: string; estado?: string }): Observable<Cliente> {
 
     if (credentials.estado != 'ACTIVO') {
-      return this.http.post<Usuario>(`${this.apiUrl}/login`, credentials).pipe(
-        tap((usuario) => localStorage.setItem('usuario', JSON.stringify(usuario)))
+      return this.http.post<Cliente>(`${this.apiUrl}/login`, credentials).pipe(
+        tap((cliente) => localStorage.setItem('usuario', JSON.stringify(cliente)))
       );
     } else {
-      throw new Error('Usuario inactivo. No se puede iniciar sesión.');
+      throw new Error('cliente inactivo. No se puede iniciar sesión.');
     }
   }
 
@@ -38,7 +36,7 @@ export class AuthService {
     localStorage.removeItem('usuario');
   }
 
-  getUsuarioActual(): Usuario | null {
+  getUsuarioActual():  Cliente | null {
     const stored = localStorage.getItem('usuario');
     return stored ? JSON.parse(stored) : null;
   }

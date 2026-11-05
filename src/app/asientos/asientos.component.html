@@ -16,39 +16,34 @@
 
   <!-- Cuadrícula de Asientos -->
   <div class="seating-grid ion-padding">
-    <!-- Recorremos las filas generadas dinámicamente desde el servicio -->
-    <div class="row ion-justify-content-center ion-align-items-center" *ngFor="let fila of filas">
+    <!-- Recorremos las filas usando la Signal con () -->
+    <div class="row ion-justify-content-center ion-align-items-center" *ngFor="let fila of filas()">
       <span class="row-label">{{ fila.nombre }}</span>
 
-      <div class="seating-grid ion-padding">
-        <div class="row" *ngFor="let fila of filas">
-          <span class="row-label">{{ fila.nombre }}</span>
-          <button *ngFor="let a of fila.asientos" class="seat" [class.selected]="isSeleccionado(a)"
-            [class.occupied]="isOcupado(a)" [disabled]="isOcupado(a)" (click)="toggleAsiento(a)">
-            {{ a.numero }}
-          </button>
-        </div>
-      </div>
-
-      <div class="ion-margin-top ion-padding" *ngIf="asientosSeleccionados.length > 0">
-        <p><strong>Total a pagar:</strong> Q{{ total }}</p>
-        <ion-button expand="block" color="success" (click)="continuarCompra()">Confirmar Reserva</ion-button>
-      </div>
-
-      <!-- Resumen y Botón de Confirmación -->
-      <div class="ion-margin-top ion-padding" *ngIf="asientosSeleccionados.length > 0">
-        <p><strong>Asientos seleccionados:</strong>
-          <span *ngFor="let a of asientosSeleccionados; let last = last">
-            {{ a.fila?.nombre }}{{ a.numero }}{{!last ? ', ' : ''}}
-          </span>
-        </p>
-        <p><strong>Total a pagar:</strong> Q{{ total }}</p>
-
-        <ion-button expand="block" color="success" (click)="continuarCompra()">
-          Confirmar Reserva
-        </ion-button>
-      </div>
-
+      <!-- Renderizamos los asientos de la fila actual -->
+      <button *ngFor="let a of fila.asientos" 
+              class="seat" 
+              [class.selected]="isSeleccionado(a)"
+              [class.occupied]="isOcupado(a)" 
+              [disabled]="isOcupado(a)" 
+              (click)="toggleAsiento(a)">
+        {{ a.numero }}
+      </button>
     </div>
   </div>  
-  
+
+  <!-- Resumen y Botón de Confirmación (Fuera del bucle) -->
+  <div class="ion-margin-top ion-padding" *ngIf="asientosSeleccionados().length > 0">
+    <p><strong>Asientos seleccionados:</strong>
+      <span *ngFor="let a of asientosSeleccionados(); let last = last">
+        {{ a.fila?.nombre }}{{ a.numero }}{{!last ? ', ' : ''}}
+      </span>
+    </p>
+    <p><strong>Total a pagar:</strong> Q{{ total }}</p>
+
+    <ion-button expand="block" color="success" (click)="continuarCompra()">
+      Confirmar Reserva
+    </ion-button>
+  </div>
+
+</ion-content>

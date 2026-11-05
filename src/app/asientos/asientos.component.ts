@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, signal, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonButton, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent } from '@ionic/angular';
 import { ReservaService } from '../services/reserva.service';
-import { AsientoService, Asiento } from '../services/asiento.service'; 
+import { AsientoService, Asiento } from '../services/asiento.service';
 import { FuncionService } from '../services/funcion.service';
-
+import { Pelicula } from '../services/peliculas.service';
 
 @Component({
   selector: 'app-asientos',
@@ -14,15 +14,16 @@ import { FuncionService } from '../services/funcion.service';
   standalone: true,
   imports: [CommonModule, IonButton, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent]
 })
-
 export class AsientosComponent implements OnInit {
   @Input() idFuncion!: number;
 
-  
+  peliculas = signal<Pelicula[]>([]);
 
-  filas: { nombre: string; asientos: Asiento[] }[] = [];
-  asientosSeleccionados: Asiento[] = [];
-  asientosOcupados: number[] = [];
+  // Declaradas como WritableSignal para refrescar la vista en entorno zoneless
+  filas = signal<{ nombre: string; asientos: Asiento[] }[]>([]);
+  asientosSeleccionados = signal<Asiento[]>([]);
+  asientosOcupados = signal<number[]>([]);
+
   precio = 0;
 
   constructor(
@@ -31,13 +32,14 @@ export class AsientosComponent implements OnInit {
     private reservaService: ReservaService,
     private asientoService: AsientoService,
     private funcionService: FuncionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.idFuncion = Number(this.route.snapshot.paramMap.get('idFuncion'));
 
     this.funcionService.obtener(this.idFuncion).subscribe(f => {
       this.precio = f.precio_entrada;
+      // Aquí es muy probable que f.sala sea un objeto completo o que f.sala.id_sala venga mal estructurado
       this.asientoService.getAsientosPorSala(f.sala!.id_sala)
         .subscribe(lista => this.armarMapa(lista));
     });
@@ -52,47 +54,63 @@ export class AsientosComponent implements OnInit {
       if (!mapa.has(n)) mapa.set(n, []);
       mapa.get(n)!.push(a);
     }
-    this.filas = [...mapa.entries()]
+
+    const resultado = [...mapa.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([nombre, asientos]) => ({
         nombre,
         asientos: asientos.sort((x, y) => x.numero - y.numero)
       }));
+
+    this.filas.set(resultado);
   }
 
   cargarAsientosOcupados() {
     this.reservaService.getAsientosOcupados(this.idFuncion).subscribe({
-      next: o => (this.asientosOcupados = o),
+      next: o => this.asientosOcupados.set(o),
       error: e => console.error(e)
     });
   }
 
-  isOcupado(a: Asiento) { return this.asientosOcupados.includes(a.id_asiento); }
-  isSeleccionado(a: Asiento) { return this.asientosSeleccionados.some(s => s.id_asiento === a.id_asiento); }
+  isOcupado(a: Asiento) {
+    return this.asientosOcupados().includes(a.id_asiento);
+  }
+
+  isSeleccionado(a: Asiento) {
+    return this.asientosSeleccionados().some(s => s.id_asiento === a.id_asiento);
+  }
 
   toggleAsiento(a: Asiento) {
     if (this.isOcupado(a)) return;
-    const i = this.asientosSeleccionados.findIndex(s => s.id_asiento === a.id_asiento);
-    i > -1 ? this.asientosSeleccionados.splice(i, 1) : this.asientosSeleccionados.push(a);
+
+    this.asientosSeleccionados.update(seleccionados => {
+      const i = seleccionados.findIndex(s => s.id_asiento === a.id_asiento);
+      if (i > -1) {
+        return seleccionados.filter(s => s.id_asiento !== a.id_asiento);
+      } else {
+        return [...seleccionados, a];
+      }
+    });
   }
 
-  get total() { return this.asientosSeleccionados.length * this.precio; }
+  get total() {
+    return this.asientosSeleccionados().length * this.precio;
+  }
 
   continuarCompra() {
+    if (!this.asientosSeleccionados().length) return;
 
-    if (!this.asientosSeleccionados.length) return;
-
-    const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
-    const idCliente = usuario?.id_cliente ?? 1; // ver nota del login abajo
+    const cliente = JSON.parse(localStorage.getItem('usuario') || 'null');
+    const idCliente = cliente?.nombre ?? cliente?.id_cliente;
 
     this.reservaService.guardarReserva({
       id_cliente: idCliente,
       id_funcion: this.idFuncion,
-      id_asientos: this.asientosSeleccionados.map(a => a.id_asiento)   // <-- nombre correcto
+      id_asiento: this.asientosSeleccionados().map(a => a.id_asiento)
     }).subscribe({
       next: () => {
         alert('Reserva confirmada');
-        this.asientosSeleccionados = [];
+        this.asientosSeleccionados.set([]);
         this.cargarAsientosOcupados();
       },
       error: err => alert(err.error || 'Ocurrió un error al procesar la reserva.')
