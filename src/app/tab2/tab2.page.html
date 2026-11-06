@@ -12,6 +12,7 @@
       <ion-card-content>
         <p><strong>Sala:</strong> {{ r.funcion?.sala?.nombre }}</p>
         <p><strong>Función:</strong> {{ r.funcion?.fecha }} {{ r.funcion?.hora?.slice(0,5) }}</p>
+        <p><strong>Asientos:</strong> {{ r.asientosTexto }}</p>
         <p><strong>Entradas:</strong> {{ r.cantidad_entradas }}</p>
         <p><strong>Total:</strong> Q{{ r.total_a_pagar }}</p>
         <ion-badge>{{ r.estado }}</ion-badge>

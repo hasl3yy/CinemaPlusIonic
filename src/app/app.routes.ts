@@ -14,6 +14,10 @@ export const routes: Routes = [
     path: 'asientos/:idFuncion',
     loadComponent: () => import('./asientos/asientos.component').then(m => m.AsientosComponent)
   },
+  {
+    path: 'registro',
+    loadComponent: () => import('./registro/registro.component').then(m => m.RegistroComponent)
+  },
 
   {
     path: 'funciones/:idPelicula',
@@ -34,6 +38,10 @@ export const routes: Routes = [
       {
         path: 'tab3',
         loadComponent: () => import('./tab3/tab3.page').then((m) => m.Tab3Page)
+      },
+      {
+        path: 'tab4',
+        loadComponent: () => import('./anuncios/anuncios.page').then((m) => m.AnunciosPage)
       },
       {
         path: '',

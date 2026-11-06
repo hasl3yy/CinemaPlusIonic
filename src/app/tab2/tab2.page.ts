@@ -9,7 +9,7 @@ import { ReservaService } from '../services/reserva.service';
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  imports: [CommonModule, IonHeader, IonToolbar, IonTitle, IonContent, IonList,
+  imports: [CommonModule, IonHeader, IonToolbar, IonTitle, IonContent,
             IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle,
             IonCardContent, IonBadge]
 })
@@ -25,15 +25,27 @@ export class Tab2Page implements OnInit {
 
   ngOnInit() {}
 
-  cargarHistorial() {
-    const cliente = JSON.parse(localStorage.getItem('usuario') || 'null');
-    if (!cliente?.id_cliente) return;
+cargarHistorial() {
+  const cliente = JSON.parse(localStorage.getItem('usuario') || 'null');
+  if (!cliente?.id_cliente) return;
 
-    this.reservaService.buscarPorCliente(cliente.id_cliente).subscribe({
-      next: lista => this.reservas.set(
-        [...lista].sort((a, b) => b.fecha_reserva.localeCompare(a.fecha_reserva))
-      ),
-      error: e => console.error('Error al cargar historial:', e)
-    });
-  }
+  this.reservaService.buscarPorCliente(cliente.id_cliente).subscribe({
+    next: lista => {
+      const ordenadas = [...lista].sort((a, b) => b.fecha_reserva.localeCompare(a.fecha_reserva));
+      this.reservas.set(ordenadas);
+
+      // por cada reserva traemos sus asientos y los pegamos como texto (ej: "A1, A2")
+      ordenadas.forEach(r => {
+        this.reservaService.getAsientosDeReserva(r.id_reserva).subscribe(detalles => {
+          const texto = detalles
+            .map(d => `${d.asiento?.fila?.nombre ?? ''}${d.asiento?.numero ?? ''}`)
+            .join(', ');
+          this.reservas.update(l =>
+            l.map(x => x.id_reserva === r.id_reserva ? { ...x, asientosTexto: texto } : x));
+        });
+      });
+    },
+    error: e => console.error('Error al cargar historial:', e)
+  });
+}
 }

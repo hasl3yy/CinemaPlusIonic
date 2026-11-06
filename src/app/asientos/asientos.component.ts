@@ -101,7 +101,8 @@ export class AsientosComponent implements OnInit {
     if (!this.asientosSeleccionados().length) return;
 
     const cliente = JSON.parse(localStorage.getItem('usuario') || 'null');
-    const idCliente = cliente?.nombre ?? cliente?.id_cliente;
+    // antes: const idCliente = cliente?.nombre ?? cliente?.id_cliente;
+    const idCliente = cliente?.id_cliente;
 
     this.reservaService.guardarReserva({
       id_cliente: idCliente,

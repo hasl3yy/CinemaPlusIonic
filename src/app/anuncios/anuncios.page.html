@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar><ion-title>Anuncios</ion-title></ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @for (a of anuncios(); track a.id_anuncio) {
+    <ion-card>
+      @if (a.imagen) { <img [src]="a.imagen" [alt]="a.titulo" /> }
+      <ion-card-header>
+        <ion-card-subtitle>{{ a.fechaPublicacion | date:'dd/MM/yyyy' }}</ion-card-subtitle>
+        <ion-card-title>{{ a.titulo }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>{{ a.descripcion }}</ion-card-content>
+    </ion-card>
+  } @empty {
+    <p class="ion-text-center">No hay anuncios por ahora.</p>
+  }
+</ion-content>

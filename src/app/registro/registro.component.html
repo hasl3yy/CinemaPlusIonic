@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start"><ion-back-button defaultHref="/login"></ion-back-button></ion-buttons>
+    <ion-title>Crear cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <label class="etiqueta">NIT</label>
+  <input class="campo" type="text" [(ngModel)]="nit" name="nit" />
+
+  <label class="etiqueta">Nombres</label>
+  <input class="campo" type="text" [(ngModel)]="nombres" name="nombres" />
+
+  <label class="etiqueta">Apellidos</label>
+  <input class="campo" type="text" [(ngModel)]="apellidos" name="apellidos" />
+
+  <label class="etiqueta">Correo electrónico</label>
+  <input class="campo" type="email" [(ngModel)]="correo" name="correo" />
+
+  <label class="etiqueta">Teléfono</label>
+  <input class="campo" type="tel" [(ngModel)]="telefono" name="telefono" />
+
+  <label class="etiqueta">Contraseña</label>
+  <input class="campo" type="password" [(ngModel)]="contrasena" name="contrasena" />
+
+  <label class="etiqueta">Confirmar contraseña</label>
+  <input class="campo" type="password" [(ngModel)]="confirmar" name="confirmar" />
+
+  <label class="etiqueta">Fotografía de perfil</label>
+  <input class="campo" type="file" accept="image/*" (change)="onFileSelected($event)" />
+  <img *ngIf="fotografia" [src]="fotografia" class="preview-foto" alt="Vista previa" />
+
+  <ion-button expand="block" (click)="registrar()" [disabled]="guardando">
+    {{ guardando ? 'Guardando...' : 'Crear cuenta' }}
+  </ion-button>
+</ion-content>

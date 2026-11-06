@@ -26,4 +26,9 @@ export class ReservaService {
   buscarPorCliente(id_cliente: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/reserva/buscar/cliente/${id_cliente}`);
   }
+
+  // Asientos de una reserva (para mostrarlos en el historial)
+  getAsientosDeReserva(id_reserva: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/detallereservaasientos/buscar/reserva/${id_reserva}`);
+  }
 }

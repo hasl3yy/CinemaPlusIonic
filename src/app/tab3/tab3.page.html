@@ -1,17 +1,38 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
-  </ion-toolbar>
+<ion-header>
+  <ion-toolbar><ion-title>Mi perfil</ion-title></ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <img *ngIf="fotografia" [src]="fotografia" class="preview-foto" alt="Foto de perfil" />
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <label class="etiqueta">Cambiar fotografía</label>
+  <input class="campo" type="file" accept="image/*" (change)="onFileSelected($event)" />
+
+  <label class="etiqueta">NIT</label>
+  <input class="campo" type="text" [(ngModel)]="nit" name="nit" />
+
+  <label class="etiqueta">Nombres</label>
+  <input class="campo" type="text" [(ngModel)]="nombres" name="nombres" />
+
+  <label class="etiqueta">Apellidos</label>
+  <input class="campo" type="text" [(ngModel)]="apellidos" name="apellidos" />
+
+  <label class="etiqueta">Correo electrónico</label>
+  <input class="campo" type="email" [(ngModel)]="correo" name="correo" />
+
+  <label class="etiqueta">Teléfono</label>
+  <input class="campo" type="tel" [(ngModel)]="telefono" name="telefono" />
+
+  <ion-button expand="block" (click)="guardar()">Guardar cambios</ion-button>
+
+  <h3 class="ion-margin-top">Cambiar contraseña</h3>
+  <input class="campo" type="password" placeholder="Contraseña actual" [(ngModel)]="actual" name="actual" />
+  <input class="campo" type="password" placeholder="Nueva contraseña" [(ngModel)]="nueva" name="nueva" />
+  <input class="campo" type="password" placeholder="Confirmar nueva contraseña" [(ngModel)]="confirmar" name="confirmar" />
+  <ion-button expand="block" color="medium" (click)="cambiarContrasena()">Cambiar contraseña</ion-button>
+
+
+  <ion-button expand="block" color="danger" class="ion-margin-top" (click)="cerrarSesion()">
+    Cerrar sesión
+  </ion-button>
 </ion-content>
